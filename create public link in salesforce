@@ -1,0 +1,46 @@
+public with sharing class AttachmentPublicLinkGenerator {
+
+    public static String generatePublicLinkForAttachment(Id objectId) {
+        try {
+           
+            List<ContentDocumentLink> contentDocumentLinks = [
+                SELECT ContentDocumentId 
+                FROM ContentDocumentLink 
+                WHERE LinkedEntityId = :objectId
+            ];
+
+            if (contentDocumentLinks.isEmpty()) {
+               
+            }
+
+           
+            Id contentDocumentId = contentDocumentLinks[0].ContentDocumentId;
+
+                       Id contentVersionId = [
+                SELECT LatestPublishedVersionId 
+                FROM ContentDocument 
+                WHERE Id = :contentDocumentId
+            ].LatestPublishedVersionId;
+
+          
+            ContentDistribution cd = new ContentDistribution();
+            cd.Name = 'Public Link for Attachment';
+            cd.ContentVersionId = contentVersionId;
+            cd.PreferencesAllowViewInBrowser = true;
+            cd.PreferencesAllowOriginalDownload = true;
+            cd.PreferencesPasswordRequired = true;
+            insert cd;
+
+            
+            cd = [SELECT DistributionPublicUrl,PreferencesPasswordRequired,password FROM ContentDistribution WHERE Id = :cd.Id];
+
+             system.debug(cd.Password);
+            return cd.DistributionPublicUrl;
+           
+
+        } catch (Exception e) {
+            System.debug('Error generating public link: ' + e.getMessage());
+            return null;
+        }
+    }
+}
