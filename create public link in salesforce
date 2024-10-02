@@ -1,3 +1,6 @@
+// content documnet id is present on both cdlink and cd distribution --- and on documnet link there is entity id that is record id -- then you can find 
+record id against each cd distribution by Vlokup of searching content documnet in content documet and linked entity id from cdl;
+
 public with sharing class AttachmentPublicLinkGenerator {
 
     public static String generatePublicLinkForAttachment(Id objectId) {
